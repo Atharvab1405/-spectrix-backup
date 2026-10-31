@@ -1,0 +1,19 @@
+SPECTRIX Phase 5 HMM occupancy estimation
+Data classification: synthetic ground truth; simulated SU observations.
+HMM input: cooperative SU busy-vote count (0..3) only.
+Ground truth is used only to generate simulated observations and score held-out predictions; it is not an HMM input.
+Train/test split: first six complete days for fitting; seventh day held out chronologically.
+Next-record prediction uses observations available through the current record only.
+BUSY hidden state: state with the higher fitted expected busy-vote count.
+Persistence baseline: next occupancy is predicted from the current cooperative vote count (busy when votes >= 2).
+start_timestamp=2026-10-26T00:00:00+05:30
+end_timestamp=2026-11-01T23:59:50+05:30
+seed=7
+hmmlearn_version=0.3.3
+models=hmmlearn.CategoricalHMM x 8 channels
+training_records_per_channel=51840
+testing_records_per_channel=8640
+next_record_predictions_per_channel=8639
+total_next_record_predictions=69112
+initialization=sensing-only vote threshold (>=2) with additive smoothing
+HMM fitting parameters: n_components=2, n_features=4, n_iter=100, tolerance=0.0001, smoothing=1.0

@@ -1,0 +1,28 @@
+SPECTRIX synthetic occupancy configuration
+All probabilities are configurable synthetic assumptions, not measured RF data.
+broadcast_reasoning=Broadcast targets are kept high (96-99%) with only small daypart changes to represent near-continuous transmission with modest modeled variation. They are configurable synthetic assumptions, not universal measured values.
+broadcast_reference=https://cseweb.ucsd.edu/~nibhaska/papers/spectrumusage.pdf
+cellular_interpretation=Cellular busy states represent synthetic traffic-level channel activity, not universal cellular RF presence or continuous downlink energy.
+category_access_note=The PS2 written requirements identify Cellular and Business as licensed, and ISM as unlicensed. They do not specify a regional frequency plan.
+data_semantics=Each row is ground-truth synthetic occupancy for the 10-second interval beginning at timestamp. Busy maps to True and idle maps to False in the shared simulator's primary_occupancy channel order. No sensing, RSSI/SNR, or predicted values are included.
+start_date=2026-10-26
+timezone=Asia/Kolkata
+days=7
+slot_seconds=10
+seed=7
+lag_one_persistence=0.58
+validation_sigma=4.0
+cellular_overnight_max_pct=25.0
+business_weekend_near_idle_max_pct=5.0
+
+Rate window order: morning, afternoon, evening, night_21_23, night_00_04
+Daypart labels: Morning=05:00-11:59:50; Afternoon=12:00-16:59:50; Evening=17:00-20:59:50; Nighttime=21:00-04:59:50 across midnight.
+
+CH01 (Broadcast): weekday=98,98,99,98,97; weekend=98,98,99,98,97
+CH02 (Broadcast): weekday=96,97,98,97,96; weekend=96,97,98,97,96
+CH03 (Cellular): weekday=40,55,60,45,20; weekend=40,55,60,45,20
+CH04 (Cellular): weekday=35,50,55,40,18; weekend=35,50,55,40,18
+CH05 (Business): weekday=30,60,25,5,2; weekend=1,1,1,1,1
+CH06 (Business): weekday=25,55,20,4,1; weekend=1,1,1,1,1
+CH07 (ISM): weekday=15,25,45,30,15; weekend=20,35,55,40,20
+CH08 (ISM): weekday=12,22,40,27,12; weekend=17,30,50,37,17

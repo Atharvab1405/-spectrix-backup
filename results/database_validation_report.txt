@@ -1,0 +1,89 @@
+SPECTRIX synthetic channel occupancy database validation report
+
+Data classification: synthetic configurable assumptions, not measured RF data.
+Local time zone: Asia/Kolkata
+Start: 2026-10-26 00:00:00 (inclusive)
+End:   2026-11-02 00:00:00 (exclusive)
+Last record timestamp: 2026-11-01T23:59:50+05:30
+Time-slot resolution: 10 seconds
+Default seed: 7; generated seed: 7
+Markov lag-one persistence assumption: 0.58
+Broadcast reasoning: Broadcast targets are kept high (96-99%) with only small daypart changes to represent near-continuous transmission with modest modeled variation. They are configurable synthetic assumptions, not universal measured values.
+Broadcast reference: https://cseweb.ucsd.edu/~nibhaska/papers/spectrumusage.pdf
+Cellular interpretation: Cellular busy states represent synthetic traffic-level channel activity, not universal cellular RF presence or continuous downlink energy.
+Category access note: The PS2 written requirements identify Cellular and Business as licensed, and ISM as unlicensed. They do not specify a regional frequency plan.
+Data semantics: Each row is ground-truth synthetic occupancy for the 10-second interval beginning at timestamp. Busy maps to True and idle maps to False in the shared simulator's primary_occupancy channel order. No sensing, RSSI/SNR, or predicted values are included.
+
+Database counts calculated from the generated CSV:
+  Data records: 483,840
+  Unique timestamps: 60,480
+  Records per channel: 60,480 .. 60,480
+  Records per channel per day: 8,640 .. 8,640
+  Hours represented: 24
+  Dayparts represented: Afternoon, Evening, Morning, Nighttime
+
+Occupancy checks calculated from generated records:
+  Overall busy fraction by channel across all seven days:
+    CH01 Broadcast: 97.808% busy (configured week-average 97.958%)
+    CH02 Broadcast: 96.632% busy (configured week-average 96.667%)
+    CH03 Cellular: 42.422% busy (configured week-average 42.917%)
+    CH04 Cellular: 38.780% busy (configured week-average 38.542%)
+    CH05 Business: 19.306% busy (configured week-average 19.185%)
+    CH06 Business: 16.243% busy (configured week-average 16.565%)
+    CH07 ISM: 25.828% busy (configured week-average 26.101%)
+    CH08 ISM: 22.323% busy (configured week-average 22.649%)
+  Time-specific checks:
+  CH03 cellular 00:00-04:59: 18.921% busy (configured 20.000%)
+  CH04 cellular 00:00-04:59: 18.175% busy (configured 18.000%)
+  CH05 business weekend: 0.874% busy (configured 1.000%)
+  CH06 business weekend: 0.932% busy (configured 1.000%)
+  Evening versus Nighttime by channel:
+    CH01 Broadcast: Evening 98.472%, Nighttime 97.108%
+    CH02 Broadcast: Evening 97.768%, Nighttime 96.448%
+    CH03 Cellular: Evening 59.841%, Nighttime 29.330%
+    CH04 Cellular: Evening 55.060%, Nighttime 26.632%
+    CH05 Business: Evening 18.016%, Nighttime 2.609%
+    CH06 Business: Evening 14.544%, Nighttime 1.736%
+    CH07 ISM: Evening 48.532%, Nighttime 21.622%
+    CH08 ISM: Evening 43.155%, Nighttime 19.211%
+
+Reproducibility calculated from generated files:
+  Same seed 7 produced byte-identical CSV: PASS
+  Seed 8 produced a different occupancy sequence: PASS
+  Seed 8 passed the same occupancy checks: PASS
+
+Validation checks:
+  [PASS] record_count
+  [PASS] per_channel_record_count
+  [PASS] per_channel_per_day_count
+  [PASS] seven_day_timestamp_sequence
+  [PASS] no_duplicate_or_missing_channel_timestamps
+  [PASS] all_24_hours_present
+  [PASS] daypart_coverage_and_boundaries
+  [PASS] timestamp_and_channel_metadata
+  [PASS] occupancy_state_values
+  [PASS] configured_probabilities_match_configuration
+  [PASS] hourly_daypart_daily_targets_within_sampling_tolerance
+  [PASS] cellular_00_to_05_below_25_percent_busy
+  [PASS] business_weekend_near_idle
+  [PASS] evening_busy_fraction_exceeds_nighttime
+  [PASS] same-seed byte-identical replay
+  [PASS] different-seed state variation
+  [PASS] alternate-seed behavior
+  [PASS] alternate-seed audit
+
+Target groups checked: 280
+Groups outside the configured statistical tolerance: 0
+Tolerance method: 4 standard errors, adjusted for configured Markov persistence.
+
+Database files:
+  channel_occupancy_7days.csv
+  hourly_occupancy_summary.csv
+  daypart_occupancy_summary.csv
+  daily_occupancy_summary.csv
+  occupancy_run_configuration.txt
+
+Main CSV checks: 14/14
+Alternate-seed CSV checks: 14/14
+Same-seed and different-seed checks are listed above.
+Overall validation: PASS
