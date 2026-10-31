@@ -304,9 +304,10 @@ class WirelessSpectrumSimulator:
             )
 
         interference_dbm = _sum_dbm(received_primary_powers)
-        rssi_dbm = _sum_dbm(
+        noise_plus_interference_dbm = _sum_dbm(
             [config.noise_floor_dbm, *received_primary_powers]
         )
+        rssi_dbm = noise_plus_interference_dbm
 
         # SNR/SINR use a hypothetical secondary-user link with small independent
         # fading. Actual transmission quality will be modeled in a later phase.
@@ -314,10 +315,7 @@ class WirelessSpectrumSimulator:
             config.secondary_signal_dbm + self._sensing_rng.gauss(0.0, 2.0)
         )
         snr_db = desired_secondary_dbm - config.noise_floor_dbm
-        sinr_denominator_dbm = _sum_dbm(
-            [config.noise_floor_dbm, *received_primary_powers]
-        )
-        sinr_db = desired_secondary_dbm - sinr_denominator_dbm
+        sinr_db = desired_secondary_dbm - noise_plus_interference_dbm
 
         return SensingReading(
             secondary_user_id=user_id,

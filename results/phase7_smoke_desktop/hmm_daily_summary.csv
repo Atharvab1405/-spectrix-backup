@@ -1,0 +1,9 @@
+scenario,seed,channel_id,period,period_detail,sample_records,actual_busy_pct,mean_hmm_busy_probability,hmm_accuracy_pct,cooperative_vote_accuracy_pct
+medium,7,CH01,2026-11-01,Sunday,2,100.0,0.97570719705,100.0,50.0
+medium,7,CH02,2026-11-01,Sunday,2,100.0,0.99994091725,100.0,100.0
+medium,7,CH03,2026-11-01,Sunday,2,0.0,0.03480765445,100.0,100.0
+medium,7,CH04,2026-11-01,Sunday,2,50.0,0.68883733365,100.0,100.0
+medium,7,CH05,2026-11-01,Sunday,2,0.0,0.0032165257,100.0,100.0
+medium,7,CH06,2026-11-01,Sunday,2,0.0,0.0028652657000000003,100.0,100.0
+medium,7,CH07,2026-11-01,Sunday,2,0.0,0.021612627000000002,100.0,100.0
+medium,7,CH08,2026-11-01,Sunday,2,0.0,0.0021805983,100.0,100.0

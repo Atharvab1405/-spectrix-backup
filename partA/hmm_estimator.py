@@ -182,6 +182,57 @@ class ChannelOccupancyHMM:
             (float(posterior[0]), float(posterior[1])),
         )
 
+    def filter_current_busy_probabilities(
+        self,
+        observations: Sequence[int],
+        *,
+        previous_posterior: Sequence[float] | None = None,
+    ) -> tuple[tuple[float, ...], tuple[float, float]]:
+        """Filter P(BUSY at this record | observations through this record).
+
+        Unlike predict_next_busy_probabilities, these values do not apply the
+        HMM transition after the current observation. This is the correct
+        probability for a decision made at the current database-record
+        boundary. Passing one observation at a time with the returned posterior
+        prevents the caller from accidentally using future observations.
+        """
+
+        if self.model is None or self.busy_state is None:
+            raise RuntimeError("fit the HMM before making predictions")
+        values = self._validate_observations(observations)
+        posterior = (
+            None
+            if previous_posterior is None
+            else np.asarray(previous_posterior, dtype=float)
+        )
+        if posterior is not None:
+            if posterior.shape != (HIDDEN_STATES,) or np.any(posterior < 0.0):
+                raise ValueError("previous_posterior must contain two non-negative values")
+            total = posterior.sum()
+            if not np.isfinite(total) or total <= 0.0:
+                raise ValueError("previous_posterior must have a positive finite sum")
+            posterior = posterior / total
+
+        current_busy_probabilities: list[float] = []
+        for symbol in values:
+            if posterior is None:
+                filtered = self.model.startprob_ * self.model.emissionprob_[:, symbol]
+            else:
+                filtered = (
+                    posterior @ self.model.transmat_
+                ) * self.model.emissionprob_[:, symbol]
+            normalizer = filtered.sum()
+            if not np.isfinite(normalizer) or normalizer <= 0.0:
+                raise RuntimeError("HMM filtering produced an invalid state probability")
+            posterior = filtered / normalizer
+            current_busy_probabilities.append(float(posterior[self.busy_state]))
+
+        assert posterior is not None
+        return (
+            tuple(current_busy_probabilities),
+            (float(posterior[0]), float(posterior[1])),
+        )
+
 
 def classification_metrics(
     truth: Sequence[bool], predictions: Sequence[bool]

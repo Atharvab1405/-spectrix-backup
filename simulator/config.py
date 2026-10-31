@@ -39,6 +39,8 @@ class ScenarioConfig:
     adjacent_channel_attenuation_db: float = 20.0
     minimum_sinr_db: float = 5.0
     packet_size_bits: int = 12000
+    slot_duration_ms: float = 1.0
+    max_attempts_per_packet: int = 3
 
     def __post_init__(self) -> None:
         if not self.name.strip():
@@ -69,6 +71,7 @@ class ScenarioConfig:
             "secondary_signal_dbm": self.secondary_signal_dbm,
             "adjacent_channel_attenuation_db": self.adjacent_channel_attenuation_db,
             "minimum_sinr_db": self.minimum_sinr_db,
+            "slot_duration_ms": self.slot_duration_ms,
         }
         for label, value in radio_values.items():
             if not math.isfinite(value):
@@ -77,6 +80,8 @@ class ScenarioConfig:
             raise ValueError("adjacent_channel_attenuation_db must not be negative")
         if self.packet_size_bits < 1:
             raise ValueError("packet_size_bits must be at least 1")
+        if self.max_attempts_per_packet < 1:
+            raise ValueError("max_attempts_per_packet must be at least 1")
 
         if self.spike_interval_slots is None:
             if self.spike_duration_slots != 0:

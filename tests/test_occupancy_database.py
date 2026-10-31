@@ -102,6 +102,33 @@ class OccupancyDatabaseReplayTests(unittest.TestCase):
             replay.record_for_slot(last_slot + 1)
         replay.close()
 
+    def test_start_record_offset_preserves_timestamp_and_local_slot_boundaries(self) -> None:
+        replay = OccupancyDatabaseReplay(
+            self.csv_path,
+            expected_timestamps=2,
+            start_record=1,
+        )
+        first_local_slot = replay.record_for_slot(0)
+        final_slot_of_offset_window = replay.record_for_slot(STEPS_PER_RECORD - 1)
+
+        self.assertEqual(replay.record_count, 1)
+        self.assertEqual(first_local_slot.record_index, 1)
+        self.assertEqual(first_local_slot.timestamp.minute, 0)
+        self.assertEqual(first_local_slot.timestamp.second, 10)
+        self.assertEqual(first_local_slot, final_slot_of_offset_window)
+        with self.assertRaises(StopIteration):
+            replay.record_for_slot(STEPS_PER_RECORD)
+        replay.close()
+
+    def test_start_record_and_record_count_must_fit_database(self) -> None:
+        with self.assertRaisesRegex(ValueError, "fit within"):
+            OccupancyDatabaseReplay(
+                self.csv_path,
+                expected_timestamps=2,
+                start_record=1,
+                record_count=2,
+            )
+
     def test_out_of_order_timestamps_are_rejected(self) -> None:
         start = datetime.fromisoformat("2026-10-26T00:00:00+05:30")
         self._write_fixture(

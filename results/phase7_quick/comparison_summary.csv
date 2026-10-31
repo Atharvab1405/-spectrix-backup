@@ -1,0 +1,25 @@
+scenario,metric,standard_mean,assm_mean,mean_paired_assm_minus_standard,paired_seed_count,interpretation
+heavy,spectrum_utilization_pct,48.88382978723404,63.653617021276595,14.769787234042553,1,measured simulation result; no preferred outcome assumed
+heavy,throughput_bps,27570480.0,35900640.0,8330160.0,1,measured simulation result; no preferred outcome assumed
+heavy,packet_delivery_ratio_pct,47.89884606965278,62.371029781201464,14.472183711548688,1,measured simulation result; no preferred outcome assumed
+heavy,mean_latency_ms,21776.441224091854,18811.0253666787,-2965.4158574131543,1,measured simulation result; no preferred outcome assumed
+heavy,su_collision_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed
+heavy,primary_user_conflict_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed
+low,spectrum_utilization_pct,9.822553191489362,12.388936170212766,2.5663829787234036,1,measured simulation result; no preferred outcome assumed
+low,throughput_bps,5539920.0,6987360.0,1447440.0,1,measured simulation result; no preferred outcome assumed
+low,packet_delivery_ratio_pct,76.61770807401875,96.63596382042984,20.018255746411086,1,measured simulation result; no preferred outcome assumed
+low,mean_latency_ms,9279.306264350387,2815.6227416363263,-6463.683522714061,1,measured simulation result; no preferred outcome assumed
+low,su_collision_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed
+low,primary_user_conflict_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed
+medium,spectrum_utilization_pct,26.01872340425532,45.6163829787234,19.597659574468082,1,measured simulation result; no preferred outcome assumed
+medium,throughput_bps,14674560.0,25727640.0,11053080.0,1,measured simulation result; no preferred outcome assumed
+medium,packet_delivery_ratio_pct,54.509146667617586,95.56618407445708,41.0570374068395,1,measured simulation result; no preferred outcome assumed
+medium,mean_latency_ms,22869.201458851236,3416.0583730182793,-19453.143085832955,1,measured simulation result; no preferred outcome assumed
+medium,su_collision_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed
+medium,primary_user_conflict_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed
+stress,spectrum_utilization_pct,58.374468085106386,58.374468085106386,0.0,1,measured simulation result; no preferred outcome assumed
+stress,throughput_bps,32923200.0,32923200.0,0.0,1,measured simulation result; no preferred outcome assumed
+stress,packet_delivery_ratio_pct,99.99708420807092,99.99708420807092,0.0,1,measured simulation result; no preferred outcome assumed
+stress,mean_latency_ms,4.5424004956990816,4.633590902463916,0.09119040676483436,1,measured simulation result; no preferred outcome assumed
+stress,su_collision_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed
+stress,primary_user_conflict_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed

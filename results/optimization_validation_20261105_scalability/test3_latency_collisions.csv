@@ -1,0 +1,9 @@
+scenario,seed,standard_mean_latency_ms,assm_mean_latency_ms,assm_minus_standard_latency_ms,standard_su_collision_packets,assm_su_collision_packets,standard_primary_conflict_packets,assm_primary_conflict_packets,standard_su_collision_rate_pct,assm_su_collision_rate_pct,standard_primary_conflict_rate_pct,assm_primary_conflict_rate_pct
+medium__users_10,7,1070.4758494768466,3043.6636146399746,1973.187765163128,0,0,0,0,0.0,0.0,0.0,0.0
+medium__users_3,7,2.3223828879856065,4757.438340903248,4755.115958015263,0,0,0,0,0.0,0.0,0.0,0.0
+medium__users_5,7,4150.164865179954,4150.164865179954,0.0,0,0,0,0,0.0,0.0,0.0,0.0
+medium__users_8,7,1526.5796477923213,3356.3371053721494,1829.757457579828,0,0,0,0,0.0,0.0,0.0,0.0
+stress__users_10,7,4.514771843789247,4.514771843789247,0.0,0,0,10000,0,0.0,0.0,9.039711452410438,0.0
+stress__users_3,7,4.372511848341232,4.372511848341232,0.0,0,0,0,0,0.0,0.0,0.0,0.0
+stress__users_5,7,4.398214540623044,4.398214540623044,0.0,0,0,0,0,0.0,0.0,0.0,0.0
+stress__users_8,7,4.525830957270752,4.578784706644734,0.052953749373982006,0,0,0,0,0.0,0.0,0.0,0.0

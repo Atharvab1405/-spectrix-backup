@@ -1,0 +1,5 @@
+scenario,seed,standard_mean_latency_ms,assm_mean_latency_ms,assm_minus_standard_latency_ms,standard_su_collision_packets,assm_su_collision_packets,standard_primary_conflict_packets,assm_primary_conflict_packets
+heavy,7,21776.441224091854,18811.0253666787,-2965.4158574131543,0,0,0,0
+low,7,9279.306264350387,2815.6227416363263,-6463.683522714061,0,0,0,0
+medium,7,22869.201458851236,3416.0583730182793,-19453.143085832955,0,0,0,0
+stress,7,4.5424004956990816,4.633590902463916,0.09119040676483436,0,0,0,0

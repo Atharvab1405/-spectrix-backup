@@ -1,0 +1,36 @@
+SPECTRIX Phase 7 paired ASSM evaluation
+Data classification: synthetic occupancy assumptions and simulated SU observations; not measured real-world RF occupancy.
+Database source is the existing seven-day occupancy CSV; source data and prior results are read-only for this run.
+HMM fitting uses cooperative busy-vote observations from database records 0 through 51839 (days 1-6) only.
+The day-7 decision uses the current-record filtered P(BUSY | votes through current record), not the next-record prediction.
+Ground truth is used only to generate simulated sensing, validate replay, and score completed outputs. It is excluded from policy decision snapshots.
+The occupancy source starts at database record 51840; each 10-second record remains active for 10000 simulator steps at 1 ms per step.
+Standard and ASSM are paired with the same scenario, seed, occupancy, per-step traffic and sensing streams, held-out record window, shared transmission model, and 10000-slot allocation cadence.
+The historical Standard experiment remains per-step and writes its historical output separately.
+Test 1: utilization and efficiency; spectrum utilization follows the shared simulator metric definition.
+Test 2: throughput and packet delivery ratio.
+Test 3: latency, secondary-user collisions, and primary-user conflicts.
+Test 4: robustness across medium and stress scenarios; retention = stress PDR / medium PDR * 100; also report stress-minus-medium PDR percentage points. Undefined when medium PDR is zero or missing.
+ASSM threshold values are configurable initial engineering assumptions, not proven-optimal values.
+For SU-count variants, vote fractions are rounded to the nearest symbol in the unchanged HMM 0-3 categorical alphabet; three-SU symbols are unchanged.
+Traffic multipliers scale existing SU arrival probabilities and cap each probability at 1.0; channel physics, packet size, retries, and transmission model are unchanged.
+Collision rates are event packets divided by attempted packets; SU collisions and PU conflicts are reported separately and together.
+Paired execution generates each random environment snapshot once and gives the same snapshot to both policies; policy queues and policy decisions remain independent.
+assm_reject_busy_probability=0.5
+assm_defer_busy_probability=0.45
+assm_minimum_fuzzy_suitability_score=50.0
+Channel eligibility order: cooperative fused BUSY rejects; pBusy >= reject threshold rejects; defer threshold <= pBusy < reject threshold defers; otherwise fuzzy score must meet minimum; each selected channel is unique per record.
+database=C:\Users\2005a\Desktop\Spectrix\results\channel_occupancy_7days.csv
+database_record_window=51840:51841
+held_out_first_timestamp=2026-11-01T00:00:00+05:30
+held_out_last_timestamp=2026-11-01T00:00:10+05:30
+scenarios=medium,stress
+first_seed=7
+repetitions=1
+seed_sequence=7
+secondary_user_counts=3,5,8,10
+traffic_multipliers=none
+records_per_run=2
+simulator_steps_per_record=10000
+allocation_cadence_slots=10000
+output_directory=C:\Users\2005a\Desktop\Spectrix\results\optimization_validation_20261105_scalability

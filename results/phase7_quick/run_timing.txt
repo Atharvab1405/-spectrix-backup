@@ -1,0 +1,8 @@
+measured_paired_simulation_seconds=449.311723
+measured_hmm_training_seconds=103.857732
+measured_total_seconds=674.907904
+measured_paired_simulator_steps=800000
+estimated_full_simulation_seconds=1164615.986275
+estimated_full_total_seconds=1165049.297921
+full-workload assumptions: 4 scenarios x 3 seeds x 2 policies x 8640 records x 10000 simulator steps
+estimate method: measured paired simulator seconds scaled by paired simulator steps; HMM training scaled by seed count; other measured overhead added once

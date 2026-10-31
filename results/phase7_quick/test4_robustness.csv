@@ -1,0 +1,3 @@
+seed,method,medium_pdr_pct,stress_pdr_pct,stress_minus_medium_pdr_percentage_points,stress_pdr_retention_vs_medium_pct,zero_or_missing_medium_pdr
+7,STANDARD_10S,54.509146667617586,99.99708420807092,45.48793754045333,183.4501002516638,False
+7,ASSM,95.56618407445708,99.99708420807092,4.430900133613832,104.63647280314306,False

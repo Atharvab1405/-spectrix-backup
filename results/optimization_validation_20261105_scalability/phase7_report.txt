@@ -1,0 +1,28 @@
+SPECTRIX Phase 7 validation and measured-results report
+run_type=SMOKE_PARTIAL_HELDOUT
+All occupancy and policy outputs are synthetic simulation results, not real-world radio measurements.
+occupancy_database=C:\Users\2005a\Desktop\Spectrix\results\channel_occupancy_7days.csv
+occupancy_database_channel_slot_rows=483840
+occupancy_hourly_groups=192
+occupancy_daily_groups=56
+occupancy_weekday_weekend_groups=16
+occupancy_daypart_groups=32
+heldout_records_per_policy_run=2
+paired_scenario_seed_runs=8
+policy_run_rows=16
+current_record_hmm_evaluation_rows=128
+measured_paired_simulation_wall_seconds=104.466
+measured_hmm_training_wall_seconds=164.549
+measured_total_wall_seconds=413.081
+paired_simulator_steps_measured=320000
+estimated_full_evaluation_simulation_seconds=2707767.691
+estimated_full_evaluation_total_seconds=2708405.402
+validation_database_record_count=PASS
+validation_seventh_day_chronological_offset=PASS
+validation_paired_environment_equal_at_every_decision_boundary=PASS
+validation_policy_api_excludes_ground_truth=PASS
+validation_allocation_cadence_is_10000_slots=PASS
+validation_prior_outputs_preserved=verified separately by pre/post SHA-256 checks
+four_comparison_tables=comparison_summary_rows:48,test1_rows:8,test2_rows:8,test3_rows:8,test4_rows:8
+Results in this report are measured from the CSVs emitted by this run. No expected performance ranking is asserted.
+The smoke run covers only the requested initial held-out records and is not a complete seventh-day performance evaluation.

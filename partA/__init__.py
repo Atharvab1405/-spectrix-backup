@@ -5,6 +5,12 @@ from .cooperative_sensing import (
     CooperativeSensingFusion,
     CooperativeSensingResult,
 )
+from .assm_allocator import (
+    AssmAllocationConfig,
+    AssmAllocationResult,
+    AssmAllocator,
+    AssmChannelAssessment,
+)
 from .fuzzy_engine import (
     FuzzyChannelDecisionEngine,
     FuzzyEngineConfig,
@@ -13,6 +19,10 @@ from .fuzzy_engine import (
 )
 
 __all__ = [
+    "AssmAllocationConfig",
+    "AssmAllocationResult",
+    "AssmAllocator",
+    "AssmChannelAssessment",
     "ChannelFusionResult",
     "CooperativeSensingFusion",
     "CooperativeSensingResult",

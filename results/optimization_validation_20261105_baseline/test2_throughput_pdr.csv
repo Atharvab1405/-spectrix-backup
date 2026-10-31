@@ -1,0 +1,2 @@
+scenario,seed,standard_throughput_bps,assm_throughput_bps,assm_minus_standard_throughput_bps,standard_pdr_pct,assm_pdr_pct,assm_minus_standard_pdr_percentage_points
+medium,7,9004200.0,21004200.0,12000000.0,33.370394254074846,77.84349914389273,44.47310488981788

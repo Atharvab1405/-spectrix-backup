@@ -230,6 +230,23 @@ class FuzzyChannelDecisionEngine:
 
     def __init__(self, config: FuzzyEngineConfig | None = None) -> None:
         self.config = config or FuzzyEngineConfig()
+        self._output_universe = np.linspace(
+            self.config.suitability_domain[0],
+            self.config.suitability_domain[1],
+            1001,
+        )
+        self._output_memberships = {
+            category: self._membership_curve(
+                self.config.suitability_memberships.for_category(category)
+            )
+            for category in CATEGORIES
+        }
+
+    def _membership_curve(self, points: tuple[float, ...]) -> np.ndarray:
+        vertices = np.asarray(points, dtype=float)
+        if len(vertices) == 3:
+            return fuzz.trimf(self._output_universe, vertices)
+        return fuzz.trapmf(self._output_universe, vertices)
 
     @staticmethod
     def _numeric_input(name: str, value: float) -> float:
@@ -306,12 +323,9 @@ class FuzzyChannelDecisionEngine:
                 interference, self.config.interference_memberships
             ),
         }
-        output_universe = np.linspace(
-            self.config.suitability_domain[0],
-            self.config.suitability_domain[1],
-            1001,
-        )
-        aggregated_output = np.zeros_like(output_universe)
+        max_activation: dict[Category, float] = {
+            category: 0.0 for category in CATEGORIES
+        }
         fired_rules: list[FiredRule] = []
 
         for rule in self.config.rules:
@@ -329,22 +343,25 @@ class FuzzyChannelDecisionEngine:
                     activation=float(activation),
                 )
             )
-            output_points = np.asarray(
-                self.config.suitability_memberships.for_category(rule.suitability),
-                dtype=float,
+            max_activation[rule.suitability] = max(
+                max_activation[rule.suitability], activation
             )
-            if len(output_points) == 3:
-                consequent = fuzz.trimf(output_universe, output_points)
-            else:
-                consequent = fuzz.trapmf(output_universe, output_points)
+
+        aggregated_output = np.zeros_like(self._output_universe)
+        for category in CATEGORIES:
+            activation = max_activation[category]
+            if activation <= 0.0:
+                continue
             aggregated_output = np.fmax(
                 aggregated_output,
-                np.fmin(activation, consequent),
+                np.fmin(activation, self._output_memberships[category]),
             )
 
         if not fired_rules or not np.any(aggregated_output):
             raise RuntimeError("no fuzzy rules fired for the supplied inputs")
-        score = float(fuzz.defuzz(output_universe, aggregated_output, "centroid"))
+        score = float(
+            fuzz.defuzz(self._output_universe, aggregated_output, "centroid")
+        )
         return FuzzyScoreResult(
             suitability_score=score,
             snr_db=snr,

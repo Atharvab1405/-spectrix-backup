@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+from itertools import islice
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
 from pathlib import Path
@@ -28,6 +29,7 @@ SIMULATOR_STEP_MS = 1
 STEPS_PER_RECORD = SLOT_SECONDS * 1000 // SIMULATOR_STEP_MS
 EXPECTED_DAYS = 7
 EXPECTED_TIMESTAMPS = EXPECTED_DAYS * 24 * 60 * 60 // SLOT_SECONDS
+_VALIDATED_FILE_SIGNATURES: set[tuple[str, int, int, int, int]] = set()
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,6 +60,8 @@ class OccupancyDatabaseReplay:
         csv_path: str | Path,
         *,
         expected_timestamps: int = EXPECTED_TIMESTAMPS,
+        start_record: int = 0,
+        record_count: int | None = None,
     ) -> None:
         if isinstance(expected_timestamps, bool) or not isinstance(
             expected_timestamps, int
@@ -65,10 +69,22 @@ class OccupancyDatabaseReplay:
             raise TypeError("expected_timestamps must be a positive integer")
         if expected_timestamps < 1:
             raise ValueError("expected_timestamps must be at least 1")
+        if isinstance(start_record, bool) or not isinstance(start_record, int):
+            raise TypeError("start_record must be a non-negative integer")
+        if not 0 <= start_record < expected_timestamps:
+            raise ValueError("start_record must identify a record in the database")
+        if record_count is None:
+            record_count = expected_timestamps - start_record
+        if isinstance(record_count, bool) or not isinstance(record_count, int):
+            raise TypeError("record_count must be a positive integer")
+        if record_count < 1 or start_record + record_count > expected_timestamps:
+            raise ValueError("record_count must fit within the database from start_record")
 
         self.csv_path = Path(csv_path)
         self.expected_timestamps = expected_timestamps
-        self.total_simulator_steps = expected_timestamps * self.steps_per_record
+        self.start_record = start_record
+        self.record_count = record_count
+        self.total_simulator_steps = record_count * self.steps_per_record
         self._validate_complete_csv()
         self._file: TextIO | None = None
         self._reader: csv.DictReader | None = None
@@ -80,6 +96,16 @@ class OccupancyDatabaseReplay:
         """Validate schema, channel mapping, full coverage, and time ordering."""
 
         try:
+            file_stat = self.csv_path.stat()
+            signature = (
+                str(self.csv_path.resolve()),
+                file_stat.st_size,
+                file_stat.st_mtime_ns,
+                file_stat.st_ctime_ns,
+                self.expected_timestamps,
+            )
+            if signature in _VALIDATED_FILE_SIGNATURES:
+                return
             with self.csv_path.open("r", newline="", encoding="utf-8") as csv_file:
                 reader = csv.DictReader(csv_file)
                 if tuple(reader.fieldnames or ()) != DATABASE_FIELDS:
@@ -147,18 +173,36 @@ class OccupancyDatabaseReplay:
                     raise ValueError(
                         f"occupancy CSV contains more than {self.expected_timestamps} timestamp groups"
                     )
+            final_stat = self.csv_path.stat()
+            final_signature = (
+                str(self.csv_path.resolve()),
+                final_stat.st_size,
+                final_stat.st_mtime_ns,
+                final_stat.st_ctime_ns,
+                self.expected_timestamps,
+            )
+            if final_signature != signature:
+                raise OSError("occupancy CSV changed while it was being validated")
+            _VALIDATED_FILE_SIGNATURES.add(signature)
         except OSError as error:
             raise OSError(f"cannot read occupancy database {self.csv_path}: {error}") from error
 
     def reset(self) -> None:
-        """Restart chronological playback at the first database timestamp."""
+        """Restart playback at the configured chronological record offset."""
 
         if self._file is not None:
             self._file.close()
         self._file = self.csv_path.open("r", newline="", encoding="utf-8")
-        self._reader = csv.DictReader(self._file)
+        header = self._file.readline().rstrip("\r\n")
+        if tuple(header.split(",")) != DATABASE_FIELDS:
+            raise RuntimeError("occupancy CSV header changed after validation")
+        lines_to_skip = self.start_record * len(CHANNEL_IDS)
+        skipped = sum(1 for _ in islice(self._file, lines_to_skip))
+        if skipped != lines_to_skip:
+            raise RuntimeError("occupancy CSV ended while seeking to start_record")
+        self._reader = csv.DictReader(self._file, fieldnames=DATABASE_FIELDS)
         self._current_record = None
-        self._next_record_index = 0
+        self._next_record_index = self.start_record
 
     def close(self) -> None:
         """Close the underlying CSV stream."""
@@ -216,7 +260,9 @@ class OccupancyDatabaseReplay:
         if time_slot >= self.total_simulator_steps:
             raise StopIteration("occupancy database playback has reached its end")
 
-        target_index = time_slot // self.steps_per_record
+        target_index = self.start_record + time_slot // self.steps_per_record
+        if target_index >= self.start_record + self.record_count:
+            raise StopIteration("occupancy database playback has reached its end")
         if (
             self._current_record is not None
             and target_index < self._current_record.record_index
