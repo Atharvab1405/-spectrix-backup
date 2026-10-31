@@ -1,0 +1,7 @@
+scenario,metric,standard_mean,assm_mean,mean_paired_assm_minus_standard,paired_seed_count,interpretation
+medium,spectrum_utilization_pct,13.642727272727273,31.824545454545454,18.18181818181818,1,measured simulation result; no preferred outcome assumed
+medium,throughput_bps,9004200.0,21004200.0,12000000.0,1,measured simulation result; no preferred outcome assumed
+medium,packet_delivery_ratio_pct,33.370394254074846,77.84349914389273,44.47310488981788,1,measured simulation result; no preferred outcome assumed
+medium,mean_latency_ms,2.3223828879856065,4757.438340903248,4755.115958015263,1,measured simulation result; no preferred outcome assumed
+medium,su_collision_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed
+medium,primary_user_conflict_packets,0.0,0.0,0.0,1,measured simulation result; no preferred outcome assumed

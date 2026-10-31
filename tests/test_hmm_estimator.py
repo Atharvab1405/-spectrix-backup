@@ -30,6 +30,22 @@ class ChannelOccupancyHMMTests(unittest.TestCase):
         self.assertEqual(prefix_probabilities, extended_probabilities[: len(prefix)])
         self.assertTrue(all(0.0 <= value <= 1.0 for value in prefix_probabilities))
 
+    def test_current_filter_uses_current_observation_without_next_transition(self) -> None:
+        prefix = (0, 1, 3, 2)
+        extended = (*prefix, 0, 0, 3)
+        prefix_probabilities, prefix_posterior = (
+            self.estimator.filter_current_busy_probabilities(prefix)
+        )
+        extended_probabilities, _ = (
+            self.estimator.filter_current_busy_probabilities(extended)
+        )
+        next_probabilities, _ = self.estimator.predict_next_busy_probabilities(prefix)
+
+        self.assertEqual(prefix_probabilities, extended_probabilities[: len(prefix)])
+        self.assertEqual(len(prefix_posterior), 2)
+        self.assertTrue(all(0.0 <= value <= 1.0 for value in prefix_probabilities))
+        self.assertNotEqual(prefix_probabilities[-1], next_probabilities[-1])
+
     def test_same_seed_fit_is_reproducible(self) -> None:
         replay = ChannelOccupancyHMM(seed=7).fit(self.training_votes)
 

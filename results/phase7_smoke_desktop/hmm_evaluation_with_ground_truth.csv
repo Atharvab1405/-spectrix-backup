@@ -1,0 +1,17 @@
+timestamp,database_record_index,channel_id,observation_type,cooperative_busy_vote_count,hmm_current_filtered_busy_probability,hmm_current_prediction,scenario,seed,evaluation_ground_truth_busy
+2026-11-01T00:00:00+05:30,51840,CH01,simulated_cooperative_busy_vote_count_0_to_3,3,0.9999998824,busy,medium,7,true
+2026-11-01T00:00:00+05:30,51840,CH02,simulated_cooperative_busy_vote_count_0_to_3,3,0.9999733856,busy,medium,7,true
+2026-11-01T00:00:00+05:30,51840,CH03,simulated_cooperative_busy_vote_count_0_to_3,0,0.0650378132,idle,medium,7,false
+2026-11-01T00:00:00+05:30,51840,CH04,simulated_cooperative_busy_vote_count_0_to_3,1,0.3791197259,idle,medium,7,false
+2026-11-01T00:00:00+05:30,51840,CH05,simulated_cooperative_busy_vote_count_0_to_3,0,0.0032165257,idle,medium,7,false
+2026-11-01T00:00:00+05:30,51840,CH06,simulated_cooperative_busy_vote_count_0_to_3,0,0.0028652663,idle,medium,7,false
+2026-11-01T00:00:00+05:30,51840,CH07,simulated_cooperative_busy_vote_count_0_to_3,1,0.0203248519,idle,medium,7,false
+2026-11-01T00:00:00+05:30,51840,CH08,simulated_cooperative_busy_vote_count_0_to_3,0,0.0021805983,idle,medium,7,false
+2026-11-01T00:00:10+05:30,51841,CH01,simulated_cooperative_busy_vote_count_0_to_3,1,0.9514145117,busy,medium,7,true
+2026-11-01T00:00:10+05:30,51841,CH02,simulated_cooperative_busy_vote_count_0_to_3,2,0.9999084489,busy,medium,7,true
+2026-11-01T00:00:10+05:30,51841,CH03,simulated_cooperative_busy_vote_count_0_to_3,0,0.0045774957,idle,medium,7,false
+2026-11-01T00:00:10+05:30,51841,CH04,simulated_cooperative_busy_vote_count_0_to_3,3,0.9985549414,busy,medium,7,true
+2026-11-01T00:00:10+05:30,51841,CH05,simulated_cooperative_busy_vote_count_0_to_3,0,0.0032165257,idle,medium,7,false
+2026-11-01T00:00:10+05:30,51841,CH06,simulated_cooperative_busy_vote_count_0_to_3,0,0.0028652651,idle,medium,7,false
+2026-11-01T00:00:10+05:30,51841,CH07,simulated_cooperative_busy_vote_count_0_to_3,1,0.0229004021,idle,medium,7,false
+2026-11-01T00:00:10+05:30,51841,CH08,simulated_cooperative_busy_vote_count_0_to_3,0,0.0021805983,idle,medium,7,false

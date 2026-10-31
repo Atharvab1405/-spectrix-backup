@@ -1,0 +1,2 @@
+scenario,seed,standard_mean_latency_ms,assm_mean_latency_ms,assm_minus_standard_latency_ms,standard_su_collision_packets,assm_su_collision_packets,standard_primary_conflict_packets,assm_primary_conflict_packets
+medium,7,2.3223828879856065,4757.438340903248,4755.115958015263,0,0,0,0

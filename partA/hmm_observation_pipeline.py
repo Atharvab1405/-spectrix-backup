@@ -32,6 +32,8 @@ def build_observation_dataset(
     *,
     seed: int = 7,
     scenario_name: str = "medium",
+    start_record: int = 0,
+    record_count: int | None = None,
 ) -> ObservationDataset:
     """Sample the Phase 4 sensing model once per 10-second database record.
 
@@ -42,7 +44,11 @@ def build_observation_dataset(
     separate mapping for evaluation and is never passed to HMM fitting.
     """
 
-    source = OccupancyDatabaseReplay(database_path)
+    source = OccupancyDatabaseReplay(
+        database_path,
+        start_record=start_record,
+        record_count=record_count,
+    )
     scenario = replace(ScenarioConfig.preset(scenario_name), num_channels=8)
     simulator = WirelessSpectrumSimulator(scenario=scenario, seed=seed)
     fusion = CooperativeSensingFusion()
@@ -51,11 +57,11 @@ def build_observation_dataset(
     timestamps: list[datetime] = []
 
     try:
-        for record_index in range(source.expected_timestamps):
-            simulator_slot = record_index * STEPS_PER_RECORD
+        for local_record_index in range(source.record_count):
+            simulator_slot = local_record_index * STEPS_PER_RECORD
             record = source.record_for_slot(simulator_slot)
             readings = simulator.sense_occupancy(record.channel_states)
-            fused = fusion.fuse(readings, time_slot=record_index)
+            fused = fusion.fuse(readings, time_slot=record.record_index)
 
             timestamps.append(record.timestamp)
             for channel_index, channel_id in enumerate(CHANNEL_IDS):
