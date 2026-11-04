@@ -149,16 +149,12 @@ def _process_queue_results(
     return delivered_latencies_ms, dropped_this_slot
 
 
-<<<<<<< HEAD
 def _advance_one_slot(
     context: _RunContext,
     slot_index: int,
     *,
     advance_environment: bool = True,
 ) -> None:
-=======
-def _advance_one_slot(context: _RunContext, slot_index: int) -> None:
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     snapshot = context.snapshot
     for user_id, arrivals in enumerate(snapshot.packet_arrivals):
         context.queues[user_id].extend(
@@ -198,11 +194,7 @@ def _advance_one_slot(context: _RunContext, slot_index: int) -> None:
         deferred_packet_slots=deferred_this_slot,
     )
 
-<<<<<<< HEAD
     if advance_environment and slot_index + 1 < context.slots:
-=======
-    if slot_index + 1 < context.slots:
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
         context.snapshot = context.simulator.step()
 
 
@@ -247,7 +239,6 @@ def run_paired_policies(
 ) -> tuple[RunMetrics, RunMetrics]:
     """Run Standard and ASSM in lockstep with paired random streams.
 
-<<<<<<< HEAD
     One shared environmental snapshot is generated per simulator slot and
     supplied to both independent policy contexts. This is equivalent to
     advancing two same-seed simulators independently, while avoiding a second
@@ -255,11 +246,6 @@ def run_paired_policies(
     its own packet queues, allocation state, and metrics.
 
     The policy API receives a DecisionSnapshot without ground truth.
-=======
-    At each decision boundary, the runner verifies that both methods received
-    the same primary occupancy, traffic arrivals, and individual sensing
-    readings. The policy API receives a DecisionSnapshot without ground truth.
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     """
 
     standard = _make_context(
@@ -280,7 +266,6 @@ def run_paired_policies(
         on_decision=on_assm_decision,
     )
 
-<<<<<<< HEAD
     if standard_simulator.scenario != assm_simulator.scenario:
         raise ValueError("paired simulators must use identical scenario settings")
 
@@ -310,23 +295,6 @@ def run_paired_policies(
             shared_snapshot = standard_simulator.step()
             standard.snapshot = shared_snapshot
             assm.snapshot = shared_snapshot
-=======
-    for slot_index in range(slots):
-        if slot_index % decision_cadence_slots == 0:
-            left = standard.snapshot
-            right = assm.snapshot
-            if (
-                left.time_slot != right.time_slot
-                or left.primary_occupancy != right.primary_occupancy
-                or left.packet_arrivals != right.packet_arrivals
-                or left.sensing_readings != right.sensing_readings
-            ):
-                raise RuntimeError(
-                    f"paired environments diverged at decision boundary {slot_index}"
-                )
-        _advance_one_slot(standard, slot_index)
-        _advance_one_slot(assm, slot_index)
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 
     standard_metrics = standard.metrics.finish(
         pending_packets_at_end=sum(len(queue) for queue in standard.queues)

@@ -216,13 +216,89 @@ def _membership_values(
 ) -> dict[Category, float]:
     values: dict[Category, float] = {}
     for category in CATEGORIES:
-        points = np.asarray(memberships.for_category(category), dtype=float)
-        if len(points) == 3:
-            membership = fuzz.trimf(np.asarray([value]), points)[0]
-        else:
-            membership = fuzz.trapmf(np.asarray([value]), points)[0]
-        values[category] = float(membership)
+        values[category] = _membership_value(
+            value, memberships.for_category(category)
+        )
     return values
+
+
+def _trimf_value(value: float, a: float, b: float, c: float) -> float:
+    """Scalar equivalent of scikit-fuzzy's trimf for ordered vertices."""
+
+    if value == b:
+        return 1.0
+    if a != b and a < value < b:
+        return (value - a) / (b - a)
+    if b != c and b < value < c:
+        return (c - value) / (c - b)
+    return 0.0
+
+
+def _membership_value(value: float, points: tuple[float, ...]) -> float:
+    """Scalar equivalent of the configured triangular/trapezoidal set."""
+
+    if len(points) == 3:
+        return _trimf_value(value, *points)
+    a, b, c, d = points
+    if value <= b:
+        return _trimf_value(value, a, b, b)
+    if value >= c:
+        return _trimf_value(value, c, c, d)
+    return 1.0
+
+
+def _centroid_vectorized(universe: np.ndarray, membership: np.ndarray) -> float:
+    """Compute the exact piecewise-linear centroid without a Python point loop.
+
+    This follows the rectangle and triangle segment-area formulas used by
+    ``skfuzzy.defuzzify.centroid``. The resulting centroid is mathematically
+    equivalent, while avoiding a Python loop over the 1001-point score grid
+    for every user/channel assessment.
+    """
+
+    x1 = universe[:-1]
+    x2 = universe[1:]
+    y1 = membership[:-1]
+    y2 = membership[1:]
+    width = x2 - x1
+    area = np.zeros_like(width)
+    moment_area = np.zeros_like(width)
+
+    rectangle = (y1 == y2) & (y1 != 0.0)
+    area[rectangle] = width[rectangle] * y1[rectangle]
+    moment_area[rectangle] = (
+        0.5 * (x1[rectangle] + x2[rectangle]) * area[rectangle]
+    )
+
+    rising = (y1 == 0.0) & (y2 != 0.0)
+    area[rising] = 0.5 * width[rising] * y2[rising]
+    moment_area[rising] = (
+        (x1[rising] + (2.0 / 3.0) * width[rising]) * area[rising]
+    )
+
+    falling = (y2 == 0.0) & (y1 != 0.0)
+    area[falling] = 0.5 * width[falling] * y1[falling]
+    moment_area[falling] = (
+        (x1[falling] + (1.0 / 3.0) * width[falling]) * area[falling]
+    )
+
+    sloped = (y1 != 0.0) & (y2 != 0.0) & (y1 != y2)
+    area[sloped] = 0.5 * width[sloped] * (y1[sloped] + y2[sloped])
+    moment_area[sloped] = (
+        (
+            (2.0 / 3.0)
+            * width[sloped]
+            * (y2[sloped] + 0.5 * y1[sloped])
+            / (y1[sloped] + y2[sloped])
+            + x1[sloped]
+        )
+        * area[sloped]
+    )
+
+    total_area = float(np.sum(area))
+    if total_area <= np.finfo(float).eps:
+        raise ValueError("cannot defuzzify an empty membership function")
+    return float(np.sum(moment_area) / total_area)
 
 
 class FuzzyChannelDecisionEngine:
@@ -359,9 +435,7 @@ class FuzzyChannelDecisionEngine:
 
         if not fired_rules or not np.any(aggregated_output):
             raise RuntimeError("no fuzzy rules fired for the supplied inputs")
-        score = float(
-            fuzz.defuzz(self._output_universe, aggregated_output, "centroid")
-        )
+        score = _centroid_vectorized(self._output_universe, aggregated_output)
         return FuzzyScoreResult(
             suitability_score=score,
             snr_db=snr,

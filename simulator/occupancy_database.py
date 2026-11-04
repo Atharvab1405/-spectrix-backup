@@ -62,6 +62,7 @@ class OccupancyDatabaseReplay:
         expected_timestamps: int = EXPECTED_TIMESTAMPS,
         start_record: int = 0,
         record_count: int | None = None,
+        steps_per_record: int = STEPS_PER_RECORD,
     ) -> None:
         if isinstance(expected_timestamps, bool) or not isinstance(
             expected_timestamps, int
@@ -79,11 +80,16 @@ class OccupancyDatabaseReplay:
             raise TypeError("record_count must be a positive integer")
         if record_count < 1 or start_record + record_count > expected_timestamps:
             raise ValueError("record_count must fit within the database from start_record")
+        if isinstance(steps_per_record, bool) or not isinstance(steps_per_record, int):
+            raise TypeError("steps_per_record must be a positive integer")
+        if steps_per_record < 1:
+            raise ValueError("steps_per_record must be at least 1")
 
         self.csv_path = Path(csv_path)
         self.expected_timestamps = expected_timestamps
         self.start_record = start_record
         self.record_count = record_count
+        self.steps_per_record = steps_per_record
         self.total_simulator_steps = record_count * self.steps_per_record
         self._validate_complete_csv()
         self._file: TextIO | None = None
@@ -202,13 +208,7 @@ class OccupancyDatabaseReplay:
             raise RuntimeError("occupancy CSV ended while seeking to start_record")
         self._reader = csv.DictReader(self._file, fieldnames=DATABASE_FIELDS)
         self._current_record = None
-<<<<<<< HEAD
         self._next_record_index = self.start_record
-=======
-        self._next_record_index = 0
-        while self._next_record_index < self.start_record:
-            self._current_record = self._read_next_record()
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 
     def close(self) -> None:
         """Close the underlying CSV stream."""

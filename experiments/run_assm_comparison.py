@@ -4,10 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
-<<<<<<< HEAD
 import math
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 from dataclasses import asdict, fields, replace
 from datetime import datetime
 from pathlib import Path
@@ -25,16 +22,12 @@ from partA.hmm_estimator import (
     ClassificationMetrics,
     classification_metrics,
 )
-<<<<<<< HEAD
 from partA.hmm_observation_pipeline import (
     ObservationDataset,
     build_observation_datasets_for_user_counts,
     build_observation_dataset,
     normalize_busy_vote_symbol,
 )
-=======
-from partA.hmm_observation_pipeline import build_observation_dataset
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 from simulator import SCENARIO_NAMES, ScenarioConfig, WirelessSpectrumSimulator
 from simulator.metrics import RunMetrics
 from simulator.occupancy_database import (
@@ -84,13 +77,7 @@ class OnlineAssmPolicy:
             snapshot.sensing_readings,
             time_slot=record_index if record_index is not None else snapshot.time_slot,
         )
-<<<<<<< HEAD
         vote_by_channel = {result.channel_id: result for result in fused.channels}
-=======
-        vote_by_channel = {
-            result.channel_id: result.busy_votes for result in fused.channels
-        }
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
         current_probabilities: dict[int, float] = {}
         hmm_rows: list[dict[str, object]] = []
         timestamp = (
@@ -100,7 +87,6 @@ class OnlineAssmPolicy:
         )
 
         for channel_index, channel_id in enumerate(CHANNEL_IDS):
-<<<<<<< HEAD
             fusion_result = vote_by_channel[channel_index]
             vote_count = fusion_result.busy_votes
             vote_symbol = normalize_busy_vote_symbol(
@@ -109,12 +95,6 @@ class OnlineAssmPolicy:
             model = self.models[channel_id]
             current, posterior = model.filter_current_busy_probabilities(
                 (vote_symbol,),
-=======
-            vote_count = vote_by_channel[channel_index]
-            model = self.models[channel_id]
-            current, posterior = model.filter_current_busy_probabilities(
-                (vote_count,),
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
                 previous_posterior=self.posteriors[channel_id],
             )
             probability = current[0]
@@ -125,14 +105,9 @@ class OnlineAssmPolicy:
                     "timestamp": timestamp,
                     "database_record_index": record_index,
                     "channel_id": channel_id,
-<<<<<<< HEAD
                     "observation_type": "simulated_cooperative_busy_vote_fraction_mapped_to_0_to_3",
                     "cooperative_busy_vote_count": vote_count,
                     "hmm_observation_vote_symbol_0_to_3": vote_symbol,
-=======
-                    "observation_type": "simulated_cooperative_busy_vote_count_0_to_3",
-                    "cooperative_busy_vote_count": vote_count,
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
                     "hmm_current_filtered_busy_probability": f"{probability:.10f}",
                     "hmm_current_prediction": "busy" if probability >= 0.50 else "idle",
                 }
@@ -165,15 +140,12 @@ class OnlineAssmPolicy:
                     "cooperative_busy_vote_count": assessment.busy_votes,
                     "cooperative_report_count": assessment.report_count,
                     "cooperative_fused_busy": assessment.cooperative_busy,
-<<<<<<< HEAD
                     "hmm_observation_vote_symbol_0_to_3": (
                         normalize_busy_vote_symbol(
                             assessment.busy_votes,
                             assessment.report_count,
                         )
                     ),
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
                     "hmm_current_filtered_busy_probability": (
                         f"{assessment.hmm_busy_probability:.10f}"
                     ),
@@ -199,10 +171,7 @@ def _fit_hmms(
     database_path: Path,
     *,
     seed: int,
-<<<<<<< HEAD
     num_secondary_users: int = 3,
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 ) -> tuple[
     dict[str, ChannelOccupancyHMM],
     dict[str, tuple[float, float]],
@@ -216,7 +185,6 @@ def _fit_hmms(
         scenario_name="medium",
         start_record=0,
         record_count=TRAIN_RECORDS,
-<<<<<<< HEAD
         num_secondary_users=num_secondary_users,
     )
     return _fit_hmms_from_dataset(
@@ -238,9 +206,6 @@ def _fit_hmms_from_dataset(
 ]:
     """Fit channel models using a prepared set of per-channel vote symbols."""
 
-=======
-    )
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     models: dict[str, ChannelOccupancyHMM] = {}
     posteriors: dict[str, tuple[float, float]] = {}
     training_rows: list[dict[str, object]] = []
@@ -259,10 +224,7 @@ def _fit_hmms_from_dataset(
         training_rows.append(
             {
                 "seed": seed,
-<<<<<<< HEAD
                 "secondary_user_count": num_secondary_users,
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
                 "channel_id": channel_id,
                 "training_records": len(training_votes),
                 "busy_hidden_state": estimator.busy_state,
@@ -274,7 +236,6 @@ def _fit_hmms_from_dataset(
     return models, posteriors, training_rows
 
 
-<<<<<<< HEAD
 def _make_experiment_scenario(
     scenario_name: str,
     *,
@@ -306,8 +267,16 @@ def _make_experiment_scenario(
     return base
 
 
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
+def _simulation_timing(simulation_mode: str) -> tuple[int, int, float]:
+    """Return steps/record, decision cadence, and milliseconds per step."""
+
+    if simulation_mode == "one_ms":
+        return STEPS_PER_RECORD, DECISION_CADENCE_SLOTS, 1.0
+    if simulation_mode == "macro_10s":
+        return 1, 1, 10_000.0
+    raise ValueError(f"unknown simulation mode: {simulation_mode!r}")
+
+
 def _csv_writer(
     path: Path, fieldnames: Sequence[str]
 ) -> tuple[object, csv.DictWriter]:
@@ -666,7 +635,6 @@ def _evaluate_hmm_current(
     return len(eval_rows)
 
 
-<<<<<<< HEAD
 def _scenario_parts(scenario: str) -> tuple[str, str]:
     base, separator, variant = scenario.partition("__")
     return base, variant if separator else ""
@@ -707,8 +675,6 @@ def _metrics_csv_rows(rows: Sequence[RunMetrics]) -> list[dict[str, object]]:
     return output
 
 
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 def _paired_metric_rows(rows: list[RunMetrics]) -> list[RunMetrics]:
     pdr = {
         (row.method, row.scenario, row.seed): row.packet_delivery_ratio_pct
@@ -717,15 +683,10 @@ def _paired_metric_rows(rows: list[RunMetrics]) -> list[RunMetrics]:
     updated: list[RunMetrics] = []
     for row in rows:
         retention = None
-<<<<<<< HEAD
         base, variant = _scenario_parts(row.scenario)
         if base == "stress":
             medium_name = "medium" + (f"__{variant}" if variant else "")
             medium = pdr.get((row.method, medium_name, row.seed))
-=======
-        if row.scenario == "stress":
-            medium = pdr.get((row.method, "medium", row.seed))
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
             stress = row.packet_delivery_ratio_pct
             if medium is not None and medium > 0.0 and stress is not None:
                 retention = 100.0 * stress / medium
@@ -803,7 +764,6 @@ def _write_comparison_tables(
                     "assm_primary_conflict_packets": (
                         assm.primary_user_conflict_packets
                     ),
-<<<<<<< HEAD
                     "standard_su_collision_rate_pct": (
                         None if standard.attempted_packets == 0 else
                         100.0 * standard.su_collision_packets / standard.attempted_packets
@@ -869,42 +829,6 @@ def _write_comparison_tables(
                         ),
                     }
                 )
-=======
-                }
-            )
-    for seed in sorted({row.seed for row in rows}):
-        for method in (METHOD_STANDARD, METHOD_ASSM):
-            medium = by_key.get((method, "medium", seed))
-            stress = by_key.get((method, "stress", seed))
-            if medium is None or stress is None:
-                continue
-            medium_pdr = medium.packet_delivery_ratio_pct
-            stress_pdr = stress.packet_delivery_ratio_pct
-            retention = (
-                100.0 * stress_pdr / medium_pdr
-                if medium_pdr is not None
-                and medium_pdr > 0.0
-                and stress_pdr is not None
-                else None
-            )
-            test4.append(
-                {
-                    "seed": seed,
-                    "method": method,
-                    "medium_pdr_pct": medium_pdr,
-                    "stress_pdr_pct": stress_pdr,
-                    "stress_minus_medium_pdr_percentage_points": (
-                        None
-                        if medium_pdr is None or stress_pdr is None
-                        else stress_pdr - medium_pdr
-                    ),
-                    "stress_pdr_retention_vs_medium_pct": retention,
-                    "zero_or_missing_medium_pdr": (
-                        medium_pdr is None or medium_pdr == 0.0
-                    ),
-                }
-            )
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 
     _write_rows(
         output_dir / "test1_utilization_efficiency.csv",
@@ -943,23 +867,17 @@ def _write_comparison_tables(
             "assm_su_collision_packets",
             "standard_primary_conflict_packets",
             "assm_primary_conflict_packets",
-<<<<<<< HEAD
             "standard_su_collision_rate_pct",
             "assm_su_collision_rate_pct",
             "standard_primary_conflict_rate_pct",
             "assm_primary_conflict_rate_pct",
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
         ),
         test3,
     )
     _write_rows(
         output_dir / "test4_robustness.csv",
         (
-<<<<<<< HEAD
             "scenario_variant",
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
             "seed",
             "method",
             "medium_pdr_pct",
@@ -1036,11 +954,11 @@ def _write_configuration(
     records: int,
     output_dir: Path,
     allocation_config: AssmAllocationConfig,
-<<<<<<< HEAD
     secondary_user_counts: Sequence[int] = (3,),
     traffic_multipliers: Sequence[float] = (),
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
+    simulation_mode: str = "one_ms",
+    steps_per_record: int = STEPS_PER_RECORD,
+    decision_cadence_slots: int = DECISION_CADENCE_SLOTS,
 ) -> None:
     first_timestamp: datetime | None = None
     last_timestamp: datetime | None = None
@@ -1052,28 +970,46 @@ def _write_configuration(
             (DAY7_RECORD + records - 1) * STEPS_PER_RECORD
         ).timestamp
 
+    if simulation_mode == "macro_10s":
+        timing_description = [
+            "Simulation mode: one 10-second macro-step per occupancy record; this is a changed time model, not an accelerated equivalent of the 1 ms model.",
+            "Each database occupancy state is sampled once at its record timestamp and remains the environment state for that macro-step.",
+            "Traffic arrival probabilities and packet-count ranges from the selected scenario are applied once per 10-second macro-step, not once per 1 ms interval.",
+            "At most one queued packet per SU is attempted per 10-second macro-step; retry limits therefore count 10-second attempts. Latency is reported in milliseconds using 10000 ms per step.",
+            "Results from this mode have the same output metric categories but are not numerically comparable to the 1 ms model as if only runtime had changed.",
+        ]
+    else:
+        timing_description = [
+            "Simulation mode: the existing 1 ms model; each 10-second occupancy record remains active for 10000 simulator steps.",
+            "Standard and ASSM are paired with the same per-step traffic and sensing streams, held-out record window, shared transmission model, and 10000-slot allocation cadence.",
+        ]
     lines = [
         "SPECTRIX Phase 7 paired ASSM evaluation",
+        f"simulation_mode={simulation_mode}",
         "Data classification: synthetic occupancy assumptions and simulated SU observations; not measured real-world RF occupancy.",
         "Database source is the existing seven-day occupancy CSV; source data and prior results are read-only for this run.",
         "HMM fitting uses cooperative busy-vote observations from database records 0 through 51839 (days 1-6) only.",
         "The day-7 decision uses the current-record filtered P(BUSY | votes through current record), not the next-record prediction.",
         "Ground truth is used only to generate simulated sensing, validate replay, and score completed outputs. It is excluded from policy decision snapshots.",
-        "The occupancy source starts at database record 51840; each 10-second record remains active for 10000 simulator steps at 1 ms per step.",
-        "Standard and ASSM are paired with the same scenario, seed, occupancy, per-step traffic and sensing streams, held-out record window, shared transmission model, and 10000-slot allocation cadence.",
+        "The occupancy source starts at database record 51840 (day 7), preserving the six-day training / one-day held-out split.",
+        *timing_description,
         "The historical Standard experiment remains per-step and writes its historical output separately.",
         "Test 1: utilization and efficiency; spectrum utilization follows the shared simulator metric definition.",
         "Test 2: throughput and packet delivery ratio.",
         "Test 3: latency, secondary-user collisions, and primary-user conflicts.",
         "Test 4: robustness across medium and stress scenarios; retention = stress PDR / medium PDR * 100; also report stress-minus-medium PDR percentage points. Undefined when medium PDR is zero or missing.",
         "ASSM threshold values are configurable initial engineering assumptions, not proven-optimal values.",
-<<<<<<< HEAD
         "For SU-count variants, vote fractions are rounded to the nearest symbol in the unchanged HMM 0-3 categorical alphabet; three-SU symbols are unchanged.",
         "Traffic multipliers scale existing SU arrival probabilities and cap each probability at 1.0; channel physics, packet size, retries, and transmission model are unchanged.",
+        *(
+            [
+                "In macro_10s mode, each configured traffic probability is applied once per SU per 10-second record; the unchanged stress preset interval/duration of 10/3 therefore represents a 100-second cycle with 30 seconds of elevated arrivals.",
+            ]
+            if simulation_mode == "macro_10s"
+            else []
+        ),
         "Collision rates are event packets divided by attempted packets; SU collisions and PU conflicts are reported separately and together.",
         "Paired execution generates each random environment snapshot once and gives the same snapshot to both policies; policy queues and policy decisions remain independent.",
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
         f"assm_reject_busy_probability={allocation_config.reject_busy_probability}",
         f"assm_defer_busy_probability={allocation_config.defer_busy_probability}",
         f"assm_minimum_fuzzy_suitability_score={allocation_config.minimum_suitability_score}",
@@ -1086,14 +1022,12 @@ def _write_configuration(
         f"first_seed={seed}",
         f"repetitions={repetitions}",
         f"seed_sequence={','.join(str(seed + index) for index in range(repetitions))}",
-<<<<<<< HEAD
         f"secondary_user_counts={','.join(str(value) for value in secondary_user_counts)}",
         f"traffic_multipliers={','.join(str(value) for value in traffic_multipliers) or 'none'}",
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
         f"records_per_run={records}",
-        f"simulator_steps_per_record={STEPS_PER_RECORD}",
-        f"allocation_cadence_slots={DECISION_CADENCE_SLOTS}",
+        f"simulator_steps_per_record={steps_per_record}",
+        f"allocation_cadence_slots={decision_cadence_slots}",
+        f"simulator_slot_duration_ms={10000 if simulation_mode == 'macro_10s' else 1}",
         f"output_directory={output_dir.resolve()}",
     ]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -1115,10 +1049,14 @@ def _write_report(
     database_path: Path,
     records: int,
     smoke: bool,
+    simulation_mode: str = "one_ms",
+    steps_per_record: int = STEPS_PER_RECORD,
+    decision_cadence_slots: int = DECISION_CADENCE_SLOTS,
 ) -> None:
     lines = [
         "SPECTRIX Phase 7 validation and measured-results report",
-        f"run_type={'SMOKE_PARTIAL_HELDOUT' if smoke else 'FULL_HELDOUT_DAY7'}",
+        f"run_type={'SMOKE_PARTIAL_HELDOUT' if smoke else 'FULL_HELDOUT_DAY7'}_{simulation_mode.upper()}",
+        f"simulation_mode={simulation_mode}",
         "All occupancy and policy outputs are synthetic simulation results, not real-world radio measurements.",
         f"occupancy_database={database_path.resolve()}",
         f"occupancy_database_channel_slot_rows={aggregate['rows_seen']}",
@@ -1140,7 +1078,7 @@ def _write_report(
         "validation_seventh_day_chronological_offset=PASS",
         "validation_paired_environment_equal_at_every_decision_boundary=PASS",
         "validation_policy_api_excludes_ground_truth=PASS",
-        "validation_allocation_cadence_is_10000_slots=PASS",
+        f"validation_record_duration_and_decision_cadence={steps_per_record}_steps_per_record__{decision_cadence_slots}_steps_per_decision=PASS",
         "validation_prior_outputs_preserved=verified separately by pre/post SHA-256 checks",
         "four_comparison_tables="
         + ",".join(f"{key}:{value}" for key, value in sorted(summary_counts.items())),
@@ -1155,7 +1093,7 @@ def _write_report(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Compare Standard and ASSM with paired 10-second decisions on database day 7."
+        description="Compare paired Standard and ASSM evaluations on database day 7."
     )
     parser.add_argument(
         "--database",
@@ -1172,7 +1110,6 @@ def main() -> None:
     parser.add_argument("--records", type=int, default=RECORDS_PER_DAY)
     parser.add_argument("--repetitions", type=int, default=3)
     parser.add_argument("--seed", type=int, default=7)
-<<<<<<< HEAD
     variant_group = parser.add_mutually_exclusive_group()
     variant_group.add_argument(
         "--secondary-users",
@@ -1186,11 +1123,18 @@ def main() -> None:
         type=float,
         help="scale SU arrival probabilities, e.g. 0.5 1.0 1.5",
     )
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     parser.add_argument("--reject-busy-probability", type=float, default=0.50)
     parser.add_argument("--defer-busy-probability", type=float, default=0.45)
     parser.add_argument("--minimum-fuzzy-score", type=float, default=50.0)
+    parser.add_argument(
+        "--simulation-mode",
+        choices=("one_ms", "macro_10s"),
+        default="one_ms",
+        help=(
+            "one_ms preserves the existing 1 ms model; macro_10s runs one changed "
+            "simulation step per 10-second database record"
+        ),
+    )
     parser.add_argument(
         "--output-dir",
         type=Path,
@@ -1198,11 +1142,16 @@ def main() -> None:
         help="new output directory; it must not already exist",
     )
     args = parser.parse_args()
+    try:
+        simulation_steps_per_record, decision_cadence_slots, slot_duration_ms = (
+            _simulation_timing(args.simulation_mode)
+        )
+    except ValueError as error:
+        parser.error(str(error))
     if not 1 <= args.records <= RECORDS_PER_DAY:
         parser.error(f"--records must be between 1 and {RECORDS_PER_DAY}")
     if args.repetitions < 1:
         parser.error("--repetitions must be at least 1")
-<<<<<<< HEAD
     if args.secondary_users is not None and (
         any(value < 1 for value in args.secondary_users)
         or len(set(args.secondary_users)) != len(args.secondary_users)
@@ -1213,8 +1162,6 @@ def main() -> None:
         or len(set(args.traffic_multipliers)) != len(args.traffic_multipliers)
     ):
         parser.error("--traffic-multipliers must be unique positive finite numbers")
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     try:
         allocation_config = AssmAllocationConfig(
             reject_busy_probability=args.reject_busy_probability,
@@ -1242,21 +1189,18 @@ def main() -> None:
         records=args.records,
         output_dir=args.output_dir,
         allocation_config=allocation_config,
-<<<<<<< HEAD
         secondary_user_counts=(args.secondary_users or [3]),
         traffic_multipliers=(args.traffic_multipliers or []),
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
+        simulation_mode=args.simulation_mode,
+        steps_per_record=simulation_steps_per_record,
+        decision_cadence_slots=decision_cadence_slots,
     )
     training_path = args.output_dir / "hmm_training_summary.csv"
     training_handle, training_writer = _csv_writer(
         training_path,
         (
             "seed",
-<<<<<<< HEAD
             "secondary_user_count",
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
             "channel_id",
             "training_records",
             "busy_hidden_state",
@@ -1273,10 +1217,7 @@ def main() -> None:
         "cooperative_busy_vote_count",
         "cooperative_report_count",
         "cooperative_fused_busy",
-<<<<<<< HEAD
         "hmm_observation_vote_symbol_0_to_3",
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
         "hmm_current_filtered_busy_probability",
         "snr_db",
         "interference_dbm",
@@ -1287,11 +1228,8 @@ def main() -> None:
         "selected_channel_for_user",
         "decision",
         "scenario",
-<<<<<<< HEAD
         "secondary_user_count",
         "traffic_multiplier",
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
         "seed",
     )
     hmm_fields = (
@@ -1300,18 +1238,12 @@ def main() -> None:
         "channel_id",
         "observation_type",
         "cooperative_busy_vote_count",
-<<<<<<< HEAD
         "hmm_observation_vote_symbol_0_to_3",
         "hmm_current_filtered_busy_probability",
         "hmm_current_prediction",
         "scenario",
         "secondary_user_count",
         "traffic_multiplier",
-=======
-        "hmm_current_filtered_busy_probability",
-        "hmm_current_prediction",
-        "scenario",
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
         "seed",
     )
     decision_handle, decision_writer = _csv_writer(
@@ -1327,7 +1259,6 @@ def main() -> None:
     try:
         for repetition in range(args.repetitions):
             seed = args.seed + repetition
-<<<<<<< HEAD
             user_counts = args.secondary_users or [
                 ScenarioConfig.preset(args.scenarios[0]).num_secondary_users
             ]
@@ -1371,17 +1302,23 @@ def main() -> None:
                             traffic_multiplier=traffic_multiplier,
                             user_count_variant=args.secondary_users is not None,
                         )
+                        scenario = replace(
+                            scenario,
+                            slot_duration_ms=slot_duration_ms,
+                        )
 
                         models, training_posteriors = hmms_by_user_count[user_count]
                         standard_source = OccupancyDatabaseReplay(
                             args.database,
                             start_record=DAY7_RECORD,
                             record_count=args.records,
+                            steps_per_record=simulation_steps_per_record,
                         )
                         assm_source = OccupancyDatabaseReplay(
                             args.database,
                             start_record=DAY7_RECORD,
                             record_count=args.records,
+                            steps_per_record=simulation_steps_per_record,
                         )
                         standard_simulator = WirelessSpectrumSimulator(
                             scenario=scenario,
@@ -1444,8 +1381,8 @@ def main() -> None:
                                 StandardAllocator(),
                                 assm_policy,
                                 seed=seed,
-                                slots=args.records * STEPS_PER_RECORD,
-                                decision_cadence_slots=DECISION_CADENCE_SLOTS,
+                                slots=args.records * simulation_steps_per_record,
+                                decision_cadence_slots=decision_cadence_slots,
                                 on_assm_decision=write_decision,
                             )
                         finally:
@@ -1457,99 +1394,12 @@ def main() -> None:
                             f"completed paired run scenario={scenario.name} seed={seed} "
                             f"records={args.records}"
                         )
-=======
-            start_training = perf_counter()
-            models, training_posteriors, training_rows = _fit_hmms(
-                args.database,
-                seed=seed,
-            )
-            training_seconds += perf_counter() - start_training
-            training_writer.writerows(training_rows)
-
-            for scenario_name in args.scenarios:
-                scenario = replace(
-                    ScenarioConfig.preset(scenario_name),
-                    num_channels=len(CHANNEL_IDS),
-                )
-                standard_source = OccupancyDatabaseReplay(
-                    args.database,
-                    start_record=DAY7_RECORD,
-                    record_count=args.records,
-                )
-                assm_source = OccupancyDatabaseReplay(
-                    args.database,
-                    start_record=DAY7_RECORD,
-                    record_count=args.records,
-                )
-                standard_simulator = WirelessSpectrumSimulator(
-                    scenario=scenario,
-                    seed=seed,
-                    occupancy_source=standard_source,
-                )
-                assm_simulator = WirelessSpectrumSimulator(
-                    scenario=scenario,
-                    seed=seed,
-                    occupancy_source=assm_source,
-                )
-                assm_policy = OnlineAssmPolicy(
-                    models,
-                    training_posteriors,
-                    allocation_config=allocation_config,
-                )
-
-                def write_decision(
-                    policy: object,
-                    decision_snapshot: DecisionSnapshot,
-                    selected: tuple[int | None, ...],
-                    *,
-                    current_scenario: str = scenario_name,
-                    current_seed: int = seed,
-                ) -> None:
-                    del decision_snapshot, selected
-                    for row in getattr(policy, "last_decision_rows"):
-                        decision_writer.writerow(
-                            {
-                                **row,
-                                "scenario": current_scenario,
-                                "seed": current_seed,
-                            }
-                        )
-                    for row in getattr(policy, "last_hmm_rows"):
-                        hmm_writer.writerow(
-                            {
-                                **row,
-                                "scenario": current_scenario,
-                                "seed": current_seed,
-                            }
-                        )
-
-                start_sim = perf_counter()
-                paired = run_paired_policies(
-                    standard_simulator,
-                    assm_simulator,
-                    StandardAllocator(),
-                    assm_policy,
-                    seed=seed,
-                    slots=args.records * STEPS_PER_RECORD,
-                    decision_cadence_slots=DECISION_CADENCE_SLOTS,
-                    on_assm_decision=write_decision,
-                )
-                simulation_seconds += perf_counter() - start_sim
-                metrics_rows.extend(paired)
-                standard_source.close()
-                assm_source.close()
-                print(
-                    f"completed paired run scenario={scenario_name} seed={seed} "
-                    f"records={args.records}"
-                )
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     finally:
         training_handle.close()
         decision_handle.close()
         hmm_handle.close()
 
     metrics_rows = _paired_metric_rows(metrics_rows)
-<<<<<<< HEAD
     metric_fields = tuple(field.name for field in fields(RunMetrics)) + (
         "secondary_user_count",
         "traffic_multiplier",
@@ -1561,13 +1411,6 @@ def main() -> None:
         args.output_dir / "paired_metrics.csv",
         metric_fields,
         _metrics_csv_rows(metrics_rows),
-=======
-    metric_fields = tuple(field.name for field in fields(RunMetrics))
-    _write_rows(
-        args.output_dir / "paired_metrics.csv",
-        metric_fields,
-        [asdict(row) for row in metrics_rows],
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     )
     comparison_counts = _write_comparison_tables(args.output_dir, metrics_rows)
     hmm_row_count = _evaluate_hmm_current(
@@ -1583,27 +1426,21 @@ def main() -> None:
     total_seconds = perf_counter() - start_total
     simulated_steps = (
         args.records
-        * STEPS_PER_RECORD
+        * simulation_steps_per_record
         * 2
         * len(args.scenarios)
         * args.repetitions
-<<<<<<< HEAD
         * len(args.secondary_users or [3])
         * len(args.traffic_multipliers or [1.0])
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     )
     full_step_count = (
         RECORDS_PER_DAY
-        * STEPS_PER_RECORD
+        * simulation_steps_per_record
         * 2
         * len(SCENARIO_NAMES)
         * 3
-<<<<<<< HEAD
         * len(args.secondary_users or [3])
         * len(args.traffic_multipliers or [1.0])
-=======
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     )
     estimated_full_simulation_seconds = (
         simulation_seconds * full_step_count / simulated_steps
@@ -1627,11 +1464,8 @@ def main() -> None:
                 f"measured_paired_simulator_steps={simulated_steps}",
                 f"estimated_full_simulation_seconds={estimated_full_simulation_seconds:.6f}",
                 f"estimated_full_total_seconds={estimated_full_total_seconds:.6f}",
-<<<<<<< HEAD
-                "full-workload assumptions: 4 scenarios x 3 seeds x 2 policies x configured user/load variants x 8640 records x 10000 simulator steps",
-=======
-                "full-workload assumptions: 4 scenarios x 3 seeds x 2 policies x 8640 records x 10000 simulator steps",
->>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
+                f"full-workload assumptions: 4 scenarios x 3 seeds x 2 policies x configured user/load variants x 8640 records x {simulation_steps_per_record} simulator steps per record",
+                f"simulation_mode={args.simulation_mode}; macro_10s results change traffic, retry and latency time semantics",
                 "estimate method: measured paired simulator seconds scaled by paired simulator steps; HMM training scaled by seed count; other measured overhead added once",
             )
         )
@@ -1658,9 +1492,15 @@ def main() -> None:
         database_path=args.database,
         records=args.records,
         smoke=smoke,
+        simulation_mode=args.simulation_mode,
+        steps_per_record=simulation_steps_per_record,
+        decision_cadence_slots=decision_cadence_slots,
     )
 
-    print("SPECTRIX Phase 7 paired Standard/ASSM run complete")
+    print(
+        "SPECTRIX Phase 7 paired Standard/ASSM run complete "
+        f"(simulation_mode={args.simulation_mode})"
+    )
     print(f"occupancy database channel-slot records: {aggregate['rows_seen']:,}")
     print(f"paired simulation runs: {len(metrics_rows) // 2}")
     print(f"held-out records per run: {args.records:,}")
