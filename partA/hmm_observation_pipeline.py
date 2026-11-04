@@ -151,8 +151,11 @@ def build_observation_dataset(
     scenario_name: str = "medium",
     start_record: int = 0,
     record_count: int | None = None,
+<<<<<<< HEAD
     num_secondary_users: int = 3,
     expected_timestamps: int = EXPECTED_TIMESTAMPS,
+=======
+>>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 ) -> ObservationDataset:
     """Sample the Phase 4 sensing model once per 10-second database record.
 
@@ -166,6 +169,7 @@ def build_observation_dataset(
 
     source = OccupancyDatabaseReplay(
         database_path,
+<<<<<<< HEAD
         expected_timestamps=expected_timestamps,
         start_record=start_record,
         record_count=record_count,
@@ -175,6 +179,12 @@ def build_observation_dataset(
         num_channels=8,
         num_secondary_users=num_secondary_users,
     )
+=======
+        start_record=start_record,
+        record_count=record_count,
+    )
+    scenario = replace(ScenarioConfig.preset(scenario_name), num_channels=8)
+>>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     simulator = WirelessSpectrumSimulator(scenario=scenario, seed=seed)
     fusion = CooperativeSensingFusion()
     observations: dict[str, list[int]] = {channel_id: [] for channel_id in CHANNEL_IDS}

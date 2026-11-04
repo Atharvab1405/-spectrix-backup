@@ -202,7 +202,13 @@ class OccupancyDatabaseReplay:
             raise RuntimeError("occupancy CSV ended while seeking to start_record")
         self._reader = csv.DictReader(self._file, fieldnames=DATABASE_FIELDS)
         self._current_record = None
+<<<<<<< HEAD
         self._next_record_index = self.start_record
+=======
+        self._next_record_index = 0
+        while self._next_record_index < self.start_record:
+            self._current_record = self._read_next_record()
+>>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 
     def close(self) -> None:
         """Close the underlying CSV stream."""

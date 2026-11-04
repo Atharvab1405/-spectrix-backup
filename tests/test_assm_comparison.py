@@ -9,9 +9,13 @@ from dataclasses import replace as dataclass_replace
 from datetime import datetime, timedelta
 from pathlib import Path
 
+<<<<<<< HEAD
 from baseline import StandardAllocator
 from experiments.policy_runner import DecisionSnapshot, run_paired_policies, run_policy
 from experiments.run_assm_comparison import _make_experiment_scenario
+=======
+from experiments.policy_runner import DecisionSnapshot, run_paired_policies
+>>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
 from simulator import ScenarioConfig, WirelessSpectrumSimulator
 from simulator.occupancy_database import (
     CHANNEL_IDS,
@@ -36,6 +40,7 @@ class IdlePolicy:
 
 
 class PairedPhase7RunnerTests(unittest.TestCase):
+<<<<<<< HEAD
     def test_scalability_config_does_not_change_the_default_user_count(self) -> None:
         baseline = ScenarioConfig.preset("medium")
         self.assertEqual(baseline.num_secondary_users, 3)
@@ -92,6 +97,8 @@ class PairedPhase7RunnerTests(unittest.TestCase):
         self.assertEqual(paired_standard, independent_standard)
         self.assertEqual(paired_assm, independent_assm)
 
+=======
+>>>>>>> ca209839a0e6c20a8365a3fc13fa2fe94c184397
     def test_paired_policies_share_environment_and_decide_at_record_boundaries(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             database_path = Path(temp_dir) / "occupancy.csv"
